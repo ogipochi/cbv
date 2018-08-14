@@ -21,6 +21,8 @@ class CustomClassView:
             setattr(self,k,v)
     
     def render(self):
+        # headerが
+        header = self.header if self.header else "DEFAULT HEADER"
         return """
         <html>
         <body>
@@ -46,4 +48,29 @@ class CustomClassView:
             instance = cls(**kwargs)
             return HttpResponse(instance.render())
         return view
+
+class BetterCustomClassView(CustomClassView,):
+    def get_header(self,):
+        print('Better Custom Class View')
+        return self.header if self.header else ""
+
+    def get_context(self,):
+        return self.context if self.context else []
+    def render_context(self):
+        context = self.get_context()
+        if context:
+            return '<br>'.join(context)
+        return ""
+    def render(self):
+        return """
+        <html>
+            <body>
+                <h1>{header}</h1>
+                {body}
+            </body>
+        </html>
+        """.format(
+            header=self.get_header(),
+            body=self.render_context()
+        )
 
