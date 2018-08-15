@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+import json
 
 class CustomClassView:
     """
@@ -22,7 +23,7 @@ class CustomClassView:
     
     def render(self):
         # headerが
-        header = self.header if self.header else "DEFAULT HEADER"
+        header = self.header
         return """
         <html>
         <body>
@@ -51,12 +52,22 @@ class CustomClassView:
 
 class BetterCustomClassView(CustomClassView,):
     def get_header(self,):
+        """
+        headerがあれば返す
+        """
         print('Better Custom Class View')
         return self.header if self.header else ""
 
     def get_context(self,):
+        """
+        contextがあれば返す
+        なければ空のリストを返す
+        """
         return self.context if self.context else []
     def render_context(self):
+        """
+        contextフィールドを抽出し改行で連結した文字列を返す
+        """
         context = self.get_context()
         if context:
             return '<br>'.join(context)
@@ -73,4 +84,30 @@ class BetterCustomClassView(CustomClassView,):
             header=self.get_header(),
             body=self.render_context()
         )
+class DefaultHeaderBetterCustomClassView(BetterCustomClassView,):
+    def get_header(self,):
+        return self.header if self.header else "DEFAULT HEADER"
 
+
+class JsonCustomClassView:
+    def get_header(self,):
+        return self.header if self.header else ""
+    def get_context(self,):
+        return self.context if self.context else []
+
+    @classmethod
+    def as_view(cls,*args,**kwargs):
+        def view(request,):
+            instance = cls(**kwargs)
+            return HttpResponse(json.dumps({
+                'header':instance.get_header(),
+                'context':instance.get_context()
+            })
+            )
+        return view
+
+class DefaultHeaderJsonCustomClassView(DefaultHeaderBetterCustomClassView,JsonCustomClassView):
+    pass
+
+class JsonDefaultHeaderCustomClassView(JsonCustomClassView,DefaultHeaderBetterCustomClassView):
+    pass
