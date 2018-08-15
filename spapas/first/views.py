@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import json
+from . import mixins
 
 class CustomClassView:
     """
@@ -84,30 +85,15 @@ class BetterCustomClassView(CustomClassView,):
             header=self.get_header(),
             body=self.render_context()
         )
-class DefaultHeaderBetterCustomClassView(BetterCustomClassView,):
-    def get_header(self,):
-        return self.header if self.header else "DEFAULT HEADER"
 
-
-class JsonCustomClassView:
-    def get_header(self,):
-        return self.header if self.header else ""
-    def get_context(self,):
-        return self.context if self.context else []
-
-    @classmethod
-    def as_view(cls,*args,**kwargs):
-        def view(request,):
-            instance = cls(**kwargs)
-            return HttpResponse(json.dumps({
-                'header':instance.get_header(),
-                'context':instance.get_context()
-            })
-            )
-        return view
-
-class DefaultHeaderJsonCustomClassView(DefaultHeaderBetterCustomClassView,JsonCustomClassView):
+class DefaultHeaderMixinBetterCustomeClassView(mixins.DefaultHeaderMixin,BetterCustomClassView):
     pass
 
-class JsonDefaultHeaderCustomClassView(JsonCustomClassView,DefaultHeaderBetterCustomClassView):
+class DefaultContextMixinBetterCustomClassView(mixins.DefaultContextMixin, BetterCustomClassView):
+    pass
+
+class DefaultHeaderContextMixinBetterCustomClassView(mixins.DefaultHeaderMixin, mixins.DefaultContextMixin, BetterCustomClassView):
+    pass
+
+class JsonDefaultHeaderMixinCustomClassView(mixins.DefaultHeaderMixin, JsonCustomClassView):
     pass
