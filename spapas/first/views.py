@@ -86,14 +86,23 @@ class BetterCustomClassView(CustomClassView,):
             body=self.render_context()
         )
 
-class DefaultHeaderMixinBetterCustomeClassView(mixins.DefaultHeaderMixin,BetterCustomClassView):
+class HeaderPrefixBetterCustomClassView(mixins.HeaderPrefixMixin,BetterCustomClassView):
+    header='Hello'
+
+class HeaderPrefixDefaultBetterCustomClassView(mixins.HeaderPrefixMixin,mixins.DefaultHeaderSuperMixin,BetterCustomClassView):
     pass
 
-class DefaultContextMixinBetterCustomClassView(mixins.DefaultContextMixin, BetterCustomClassView):
+
+class ExtraContext12BetterCustomClassView(mixins.ExtraContext1Mixin, mixins.ExtraContext2Mixin, BetterCustomClassView):
     pass
 
-class DefaultHeaderContextMixinBetterCustomClassView(mixins.DefaultHeaderMixin, mixins.DefaultContextMixin, BetterCustomClassView):
-    pass
-
-class JsonDefaultHeaderMixinCustomClassView(mixins.DefaultHeaderMixin, JsonCustomClassView):
+class ExtraContext21BetterCustomClassView(mixins.ExtraContext2Mixin, mixins.ExtraContext1Mixin, BetterCustomClassView):
+    pass  
+class AllTogetherNowBetterCustomClassView(
+        mixins.HeaderPrefixMixin,
+        mixins.DefaultHeaderSuperMixin,
+        mixins.ExtraContext1Mixin,
+        mixins.ExtraContext2Mixin,
+        BetterCustomClassView
+    ):
     pass
