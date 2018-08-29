@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.views.generic import View
 import json
 from . import mixins
 
@@ -86,6 +87,35 @@ class BetterCustomClassView(CustomClassView,):
             body=self.render_context()
         )
 
+class DjangoBetterCustomClassView(View, ):
+    header = ''
+    context =''
+
+    def get_header(self, ):
+        return self.header if self.header else ""
+
+    def get_context(self , ):
+        return self.context if self.context else []
+
+    def render_context(self):
+        context = self.get_context()
+        if context:
+            return '<br />'.join(context)
+        return ""
+
+    def get(self, *args, **kwargs):
+        resp = """
+            <html>
+                <body>
+                    <h1>{header}</h1>
+                    {body}
+                </body>
+            </html>
+        """.format(
+                header=self.get_header(), body=self.render_context(),
+            )
+        return HttpResponse(resp)
+
 class HeaderPrefixBetterCustomClassView(mixins.HeaderPrefixMixin,BetterCustomClassView):
     header='Hello'
 
@@ -105,4 +135,7 @@ class AllTogetherNowBetterCustomClassView(
         mixins.ExtraContext2Mixin,
         BetterCustomClassView
     ):
+    pass
+
+class DefaultHeaderContextDjangoBetterCustomClassView(mixins.DefaultHeaderMixin, mixins.DefaultContextMixin, DjangoBetterCustomClassView):
     pass
